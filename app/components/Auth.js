@@ -11,7 +11,7 @@ import { EyeInvisibleOutline, EyeOutline } from "antd-mobile-icons"
 
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
-const Auth = ({ activeForm }) =>
+const Auth = async ({ activeForm }) =>
 {
   const supabase = createClientComponentClient()
 

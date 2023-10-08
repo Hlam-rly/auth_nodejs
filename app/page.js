@@ -13,7 +13,7 @@ import { Layout, Tabs, Row, ConfigProvider, Button as ButtonD } from "antd"
 
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"; 
 
-export default function Page()
+export default async function Page()
 {
   const supabase = createClientComponentClient();
 

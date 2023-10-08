@@ -19,8 +19,6 @@ export default async function RootLayout({children})
 {
   const supabase = createServerComponentClient({cookies});
   
-  await supabase.auth.stopAutoRefresh();
-
   const {data} = await supabase.auth.getUser();
 
   return (
