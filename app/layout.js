@@ -15,6 +15,8 @@ export const metadata = {
   description: 'Auth NextJS + NodeJS',
 }
 
+export const dynamic = "force-dynamic";
+
 export default async function RootLayout({children})
 {
   const supabase = createServerComponentClient({cookies});

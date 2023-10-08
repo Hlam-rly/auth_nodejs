@@ -7,7 +7,7 @@ import { Row, Col, Typography, theme, Spin, ConfigProvider } from "antd"
 
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
-const User = async ({ session }) =>
+const User = ({ session }) =>
 {
   const supabase = createClientComponentClient();
 
