@@ -1,95 +1,88 @@
-import Image from 'next/image'
-import styles from './page.module.css'
+'use client'
 
-export default function Home() {
-  return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>app/page.js</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
+import { useContext, useState } from "react"
+import { useBoolean } from "ahooks";
+import useMounted from "./hooks/useMounted";
 
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
+import { breakpointsContext, sessionContext } from "./helpers/Context";
 
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
+import Auth from "./components/Auth";
+import User from "./components/User";
+import { Layout, Tabs, Row, ConfigProvider, Button as ButtonD } from "antd"
 
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
 
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore the Next.js 13 playground.</p>
-        </a>
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"; 
 
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+export default function Page()
+{
+  const supabase = createClientComponentClient();
+
+  const {isMounted} = useMounted();
+
+  const { Header, Content } = Layout;
+
+  const [formIndex, setFormIndex] = useState(0);
+
+  const {size} = useContext(breakpointsContext);
+  const {session, setSession} = useContext(sessionContext);
+
+  const [loading, { setFalse, setTrue }] = useBoolean(false);
+
+  const menuItems =
+  [
+    {
+      label: "Sign In",
+      key: "0",
+    },
+    {
+      label: "Sign Up",
+      key: "1"
+    },
+  ];
+
+  const signOut = async () =>
+  {
+    setTrue();
+
+    await supabase.auth.signOut();
+
+    setSession("");
+
+    setFalse();
+  };
+
+  return(
+    <>
+    {
+        isMounted &&
+        <Layout>
+          <ConfigProvider theme={{ components: { Layout: { headerBg: "transparent", bodyBg: "#ffffff" } }, token: { colorLink: "#fcff9c" } }}>
+            <Header >
+              <Row align="middle" style={size.md ? { flexFlow: "row-reverse wrap", height: "100%" } : { justifyContent: "center", height: "100%" }} >
+                {
+                  session
+                  ?
+                    <ButtonD loading={loading} onClick={signOut} type="link">Sign out</ButtonD>
+                  :
+                    <Tabs defaultActiveKey="0" onChange={(key) => setFormIndex(key)} items={menuItems} animated={true} centered tabBarStyle={{ backgroundColor: "transparent", border: 0 }}></Tabs>
+                }
+              </Row>
+            </Header>
+
+            <Content style={{ display: "flex", flexDirection: "column", justifyContent: "center", overflowX: "hidden", maxWidth: "100vw" }}>
+              {
+                <>
+                  {
+                    session ?
+                      <User session={session} />
+                    : <Auth activeForm={formIndex} />
+                  }
+                </>
+              }
+            </Content>
+          </ConfigProvider>
+        </Layout>
+      }
+    </>
   )
 }
