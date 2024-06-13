@@ -57,10 +57,14 @@ const Auth = ({ activeForm }) =>
       {
         setSession(response.data.session.user);
       }
+      else
+      {
+        authError("top", response.error.message);
+      }
     }
-    catch (err)
+    catch (error)
     {
-      console.log(err);
+      authError("top", error.message);
     }
     finally
     {
@@ -91,14 +95,13 @@ const Auth = ({ activeForm }) =>
       }
       else
       {
-        signUpError("top", response.error.message);
+        authError("top", response.error.message);
 
       }
-
     }
     catch (error)
     {
-      console.log('ha', error)
+      authError("top", error.message);
     }
     finally
     {
@@ -106,11 +109,11 @@ const Auth = ({ activeForm }) =>
     }
   }
 
-  const signUpError = (placement, message) =>
+  const authError = (placement, message) =>
   {
     api.error({
       message: message,
-      duration: 2,
+      duration: 3,
       style: {width: 420},
       placement
     })

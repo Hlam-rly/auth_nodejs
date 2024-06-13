@@ -3,9 +3,12 @@
 import { useState, useEffect } from "react"
 import { useBoolean } from "ahooks";
 
-import { Row, Col, Typography, theme, Spin, ConfigProvider } from "antd"
+import { Row, Col, Typography, theme, Spin, ConfigProvider, Tabs } from "antd"
 
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+
+import Tasks from "./Tasks";
+import AssignTask from "./AssignTask";
 
 const User = ({ session }) =>
 {
@@ -20,6 +23,24 @@ const User = ({ session }) =>
   const [id, setId] = useState("");
   const [description, setDescription] = useState("")
   const [nickname, setNickname] = useState("")
+
+  const items = [
+    {
+      key: '1',
+      label: 'Your tasks',
+      children: <Tasks />,
+    },
+    {
+      key: '2',
+      label: 'Assign task',
+      children: <AssignTask id={id} nickname={nickname} />,
+    },
+    {
+      key: '3',
+      label: 'Your assignments',
+      children: <></>,
+    }
+  ];
 
   const updateInfo = async (obj) =>
   {
@@ -52,7 +73,7 @@ const User = ({ session }) =>
   {
     (async () =>
     {
-      const userInfo = await supabase.from('UserDetails').select().eq('uid', session.id).limit(1).single();
+      const userInfo = await supabase.from('UserDetails').select().eq('uid', session.id).single();
 
       if(!userInfo.error)
       {
@@ -67,7 +88,16 @@ const User = ({ session }) =>
   return (
   <>
     <ConfigProvider theme={{token: {colorLink: "#1677ff", fontSize: 16, colorTextHeading: '#ffffff', colorText: "#fcffe8" }}}>
-      <Row wrap={false} gutter={[16,16]}>
+      <Row justify={"center"}>
+        <Col span={16}>
+          <Tabs centered type="card" defaultActiveKey="1" items={items}  />
+        </Col>
+      </Row>
+    </ConfigProvider>
+  </>)
+}
+
+      {/* <Row wrap={false} gutter={[16,16]}>
         <Col style={{ backgroundColor: token.colorPrimary, borderRadius: "4px" }} xl={{span: 8, offset: 8}} md={{span: 12, offset: 6}} sm={{span: 20, offset: 2}} xs={{span: 24, offset: 0}}>
           <Spin spinning={loading}>
             <Row wrap={false}  justify="center">
@@ -92,9 +122,6 @@ const User = ({ session }) =>
             </Row>
           </Spin>
         </Col>
-      </Row>
-    </ConfigProvider>
-  </>)
-}
+      </Row> */}
 
 export default User;

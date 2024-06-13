@@ -58,11 +58,14 @@ export default function Page()
         <Layout>
           <ConfigProvider theme={{ components: { Layout: { headerBg: "transparent", bodyBg: "#ffffff" } }, token: { colorLink: "#fcff9c" } }}>
             <Header >
-              <Row align="middle" style={size.md ? { flexFlow: "row-reverse wrap", height: "100%" } : { justifyContent: "center", height: "100%" }} >
+              <Row align="middle" style={size.md ? {justifyContent: "space-between", flexFlow: "wrap", height: "100%" } : { justifyContent: "center", height: "100%" }} >
                 {
                   session
                   ?
-                    <ButtonD loading={loading} onClick={signOut} type="link">Sign out</ButtonD>
+                    <>
+                      <h2>Hello, {session.user_metadata.nickname}</h2>
+                      <ButtonD loading={loading} onClick={signOut} type="link">Sign out</ButtonD>
+                    </>
                   :
                     <Tabs defaultActiveKey="0" onChange={(key) => setFormIndex(key)} items={menuItems} animated={true} centered tabBarStyle={{ backgroundColor: "transparent", border: 0 }}></Tabs>
                 }
