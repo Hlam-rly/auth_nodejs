@@ -9,10 +9,12 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
 import Tasks from "./Tasks";
 import AssignTask from "./AssignTask";
+import AssignedTask from "./AssignedTask";
 
 const User = ({ session }) =>
 {
-  const supabase = createClientComponentClient();
+          {/*todo: uncomment*/}
+  // const supabase = createClientComponentClient();
 
   const { Title, Paragraph } = Typography;
 
@@ -38,7 +40,7 @@ const User = ({ session }) =>
     {
       key: '3',
       label: 'Your assignments',
-      children: <></>,
+      children: <AssignedTask />,
     }
   ];
 
@@ -69,21 +71,22 @@ const User = ({ session }) =>
     }
   }
 
-  useEffect(() =>
-  {
-    (async () =>
-    {
-      const userInfo = await supabase.from('UserDetails').select().eq('uid', session.id).single();
+  //todo: uncomment
+  // useEffect(() =>
+  // {
+  //   (async () =>
+  //   {
+  //     const userInfo = await supabase.from('UserDetails').select().eq('uid', session.id).single();
 
-      if(!userInfo.error)
-      {
-        setId(userInfo.data.id);
-        setNickname(userInfo.data.nickname);
-        setDescription(userInfo.data.description ?? "");
-      }
-    })()
+  //     if(!userInfo.error)
+  //     {
+  //       setId(userInfo.data.id);
+  //       setNickname(userInfo.data.nickname);
+  //       setDescription(userInfo.data.description ?? "");
+  //     }
+  //   })()
 
-  }, [session.user]);
+  // }, [session.user]);
 
   return (
   <>

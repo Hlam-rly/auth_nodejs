@@ -12,8 +12,9 @@ const AssignTask = ({id, nickname}) =>
     const { api } = useContext(notificationContext);
 
     const [assignLoading, setAssignLoading] = useBoolean(false);
-
-    const supabase = createClientComponentClient()
+  
+    //todo: uncomment
+    // const supabase = createClientComponentClient()
 
     const createAssign = async (assignValues) =>
     {
