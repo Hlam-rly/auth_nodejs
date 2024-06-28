@@ -1,4 +1,3 @@
-## Basic NodeJS Auth project
 NextJS 13, NodeJS
 Libraries: Ant Design, ahooks
 Database: Supabase
