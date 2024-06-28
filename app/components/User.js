@@ -1,92 +1,84 @@
 'use client'
 
 import { useState, useEffect } from "react"
-import { useBoolean } from "ahooks";
 
-import { Row, Col, Typography, theme, Spin, ConfigProvider, Tabs } from "antd"
+import { Row, Col, ConfigProvider, Tabs } from "antd"
 
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
 import Tasks from "./Tasks";
 import AssignTask from "./AssignTask";
 import AssignedTask from "./AssignedTask";
+import Workers from "./Workers";
 
 const User = ({ session }) =>
 {
-          {/*todo: uncomment*/}
-  // const supabase = createClientComponentClient();
-
-  const { Title, Paragraph } = Typography;
-
-  const { token } = theme.useToken();
-
-  const [loading, { setFalse, setTrue }] = useBoolean(false);
+  const supabase = createClientComponentClient();
 
   const [id, setId] = useState("");
-  const [description, setDescription] = useState("")
   const [nickname, setNickname] = useState("")
+
+  const [ownedWorkers, setOwnedWorkers] = useState(undefined);
+
+  const refreshWorkers = async (idInput = id) =>
+  {
+    console.log(idInput);
+    const response = await supabase.from('OwnerWorker').select('id, id_worker, UserDetails:id_worker (nickname)').eq('id_owner', idInput);
+
+    if(!response.error)
+    {
+      setOwnedWorkers(() => [...response.data]);
+    }
+    else
+    {
+      console.log(response);
+    }
+  }
 
   const items = [
     {
       key: '1',
       label: 'Your tasks',
-      children: <Tasks />,
+      children: <Tasks id={id} />,
     },
     {
       key: '2',
       label: 'Assign task',
-      children: <AssignTask id={id} nickname={nickname} />,
+      children: <AssignTask id={id} nickname={nickname} workers={{refresh: async () => await refreshWorkers(), list: ownedWorkers}} />,
     },
     {
       key: '3',
       label: 'Your assignments',
-      children: <AssignedTask />,
+      children: <AssignedTask id={id} />,
+    },
+    {
+      key: '4',
+      label: 'Your workers',
+      children: <Workers id={id} workers={{refresh: async () => await refreshWorkers(), list: ownedWorkers}}/>,
     }
   ];
 
-  const updateInfo = async (obj) =>
+  useEffect(() =>
   {
-    try
+    (async () =>
     {
-      setTrue();
-  
-      const response = await supabase.from('UserDetails').update({[obj.fieldName]: obj.fieldValue}).eq('id', id).select();
-  
-      if (response.status === 200)
+      const userInfo = await supabase.from('UserDetails').select().eq('uid', session.id).single();
+
+      if(userInfo.error)
       {
-        obj.setFunction(response.data[0][obj.fieldName]);
+        console.log(error);
       }
       else
       {
-        console.log(response.statusText);
+        setId(session.id);
+        setNickname(userInfo.data.nickname);
+        setDescription(userInfo.data.description ?? "");
+    
+        await refreshWorkers(session.id);
       }
-    }
-    catch(err)
-    {
-      console.log(err);
-    }
-    finally
-    {
-      setFalse();
-    }
-  }
+    })()
 
-  //todo: uncomment
-  // useEffect(() =>
-  // {
-  //   (async () =>
-  //   {
-  //     const userInfo = await supabase.from('UserDetails').select().eq('uid', session.id).single();
-
-  //     if(!userInfo.error)
-  //     {
-  //       setId(userInfo.data.id);
-  //       setNickname(userInfo.data.nickname);
-  //       setDescription(userInfo.data.description ?? "");
-  //     }
-  //   })()
-
-  // }, [session.user]);
+  }, [session.user]);
 
   return (
   <>
@@ -99,32 +91,5 @@ const User = ({ session }) =>
     </ConfigProvider>
   </>)
 }
-
-      {/* <Row wrap={false} gutter={[16,16]}>
-        <Col style={{ backgroundColor: token.colorPrimary, borderRadius: "4px" }} xl={{span: 8, offset: 8}} md={{span: 12, offset: 6}} sm={{span: 20, offset: 2}} xs={{span: 24, offset: 0}}>
-          <Spin spinning={loading}>
-            <Row wrap={false}  justify="center">
-              <Col span={23}>
-                <Title level={2}>Your profile:</Title>
-                <Row wrap={false} >
-                  <Col span={5} xs={{span: 7}}>
-                    <Paragraph strong={true}>Nickname:&nbsp;</Paragraph>
-                  </Col>
-                  <Col span={19} xs={{span: 17}}>
-                    <Paragraph editable={{ onChange: (value) => updateInfo({ fieldName: "nickname", fieldValue: value, setFunction: (setValue) => setNickname(setValue) }), tooltip: false }}>{nickname}</Paragraph>
-                  </Col>
-                </Row>
-
-                <Row wrap={false}>
-                  <Col span={24}>
-                    <Paragraph strong={true}>About me:</Paragraph>
-                    <Paragraph editable={{maxLength: 240, onChange: (value) => updateInfo({ fieldName: "description", fieldValue: value, setFunction: (setValue) => setDescription(setValue) }), tooltip: false }}>{description}</Paragraph>
-                  </Col>
-                </Row>
-              </Col>
-            </Row>
-          </Spin>
-        </Col>
-      </Row> */}
 
 export default User;

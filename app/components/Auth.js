@@ -96,7 +96,7 @@ const Auth = ({ activeForm }) =>
       else
       {
         authError("top", response.error.message);
-
+        console.log(response);
       }
     }
     catch (error)

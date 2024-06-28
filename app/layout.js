@@ -19,15 +19,14 @@ export const dynamic = "force-dynamic";
 
 export default async function RootLayout({children})
 {
-  // const supabase = createServerComponentClient({cookies});
+  const supabase = createServerComponentClient({cookies});
   
-  // const {data} = await supabase.auth.getUser();
-
+  const {data} = await supabase.auth.getUser();
+  
   return (
     <html lang="en">
       <body className={inter.className}>
-        {/* <AppContext sessionProp={data.user}> */}
-        <AppContext>
+        <AppContext sessionProp={data.user}>
           {children}
         </AppContext>
       </body>

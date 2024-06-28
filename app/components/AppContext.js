@@ -15,27 +15,28 @@ const AppContext = ({sessionProp, children}) =>
 
   const size = useResponsive();
 
-  //todo: uncomment
-  // useEffect(() =>
-  // {
-  //   sessionProp ? setSession(sessionProp) : setSession("");
-  // }, [sessionProp])
+  useEffect(() =>
+  {
+    sessionProp ? setSession(sessionProp) : setSession("");
+  }, [sessionProp])
 
   return(
     <>
       {
-        // session != null &&
+        session != null &&
         <ConfigProvider theme={{
           algorithm: theme.darkAlgorithm, token: { colorPrimary: "#e5e892", colorBgLayout: "#434343" }}}>
-          {/*todo: uncomment*/}
-          {/* <sessionContext.Provider value={{ session, setSession }}> */}
+          <sessionContext.Provider value={{ session, setSession }}>
             <breakpointsContext.Provider value={{ size }}>
-              <notificationContext.Provider value={{ api, values: { signUpMessage: "Please check your email, a message with confirmation link was sent to your email address. " } }}>
+              <notificationContext.Provider value={{ api, values:
+                { 
+                  signUpMessage: "Please check your email, a message with confirmation link was sent to your email address."
+                }}}>
                   {contextHolder}
                   {children}
               </notificationContext.Provider>
             </breakpointsContext.Provider>
-          {/* </sessionContext.Provider> */}
+          </sessionContext.Provider>
         </ConfigProvider>
       }
     </>

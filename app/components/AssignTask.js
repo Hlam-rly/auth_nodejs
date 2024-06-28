@@ -6,42 +6,38 @@ import { useBoolean } from "ahooks";
 
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
-const AssignTask = ({id, nickname}) =>
+const AssignTask = ({id, workers}) =>
   {
     const { TextArea } = Input;
     const { api } = useContext(notificationContext);
 
     const [assignLoading, setAssignLoading] = useBoolean(false);
-  
-    //todo: uncomment
-    // const supabase = createClientComponentClient()
 
-    const createAssign = async (assignValues) =>
+    const supabase = createClientComponentClient()
+
+    const createAssign = async (assign) =>
     {
-      
       try
       {
         setAssignLoading.setTrue();
 
-
-        const response = await supabase.auth.signUp(
-        {
-          email: assignValues.regEmail,
-          password: assignValues.regPassword,
-          options:
-          {
-            data: {nickname: assignValues.regNickname},
-            emailRedirectTo: `${location.origin}/verify/callback`
-          }
+        const {error} = await supabase.from("Assignments")
+        .insert
+        ({
+          title: assign.title,
+          description: assign.description,
+          assigned_by: id,
+          assigned_to: assign.id_worker
         });
 
-        if (!response.error)
+        if (!error)
         {
           assignSuccess("top");
         }
         else
         {
-          assignError("top", response.error.message);
+          assignError("top", "Oops, there is some error. Please try again later.");
+          console.log(error);
         }
 
       }
@@ -69,7 +65,6 @@ const AssignTask = ({id, nickname}) =>
     {
       api.info({
         message: "You have successfully created an assignment!",
-        description: <notificationContext.Consumer>{({ values }) => values.signUpMessage}</notificationContext.Consumer>,
         duration: 0,
         style: {width: 420},
         placement
@@ -79,9 +74,9 @@ const AssignTask = ({id, nickname}) =>
     return(
       <ConfigProvider theme={{token: {colorLink: "#1677ff", fontSize: 16, colorTextHeading: '#ffffff', colorText: "#fcffe8" }, components:{Button:{primaryColor: '#000000'}}}}>
         <Form layout="vertical" requiredMark={false} onFinish={createAssign}>
-          <Form.Item label="Worker" name="worker" rules={[{ required: true, message: "Select worker." }]}>
-            <Select defaultValue={id}>
-              <Select.Option value={id}>{nickname}</Select.Option>
+          <Form.Item label="Worker" name="id_worker" rules={[{ required: true, message: "Select worker." }]}>
+            <Select>
+              {workers?.list?.map((worker, key) => <Select.Option key={key} value={worker.id_worker}>{worker.UserDetails.nickname}</Select.Option>)}
             </Select>
           </Form.Item>
           <Form.Item label="Title" name="title" rules={[{ required: true, message: "Title is a required field." }]}>
