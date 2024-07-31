@@ -28,8 +28,6 @@ const Workers = ({id, workers}) =>
 
     const response = await supabase.from("UserDetails").select('uid').eq('nickname', worker.name).single();
 
-    console.log("add worker response", response);
-
     if(response.error)
     {
       if(response.code = "42703")

@@ -22,16 +22,11 @@ const User = ({ session }) =>
 
   const refreshWorkers = async (idInput = id) =>
   {
-    console.log(idInput);
     const response = await supabase.from('OwnerWorker').select('id, id_worker, UserDetails:id_worker (nickname)').eq('id_owner', idInput);
 
     if(!response.error)
     {
       setOwnedWorkers(() => [...response.data]);
-    }
-    else
-    {
-      console.log(response);
     }
   }
 
@@ -72,7 +67,6 @@ const User = ({ session }) =>
       {
         setId(session.id);
         setNickname(userInfo.data.nickname);
-        setDescription(userInfo.data.description ?? "");
     
         await refreshWorkers(session.id);
       }

@@ -51,8 +51,6 @@ const Auth = ({ activeForm }) =>
 
       const response = await supabase.auth.signInWithPassword({email: signInValues.siEmail, password: signInValues.siPassword});
 
-      console.log(response);
-      
       if (!response.error)
       {
         setSession(response.data.session.user);
@@ -96,7 +94,6 @@ const Auth = ({ activeForm }) =>
       else
       {
         authError("top", response.error.message);
-        console.log(response);
       }
     }
     catch (error)
