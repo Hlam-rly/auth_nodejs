@@ -60,7 +60,7 @@ const Tasks = ({id}) =>
           </div>
         </div>
       </Modal>
-
+      <Button onClick={refreshTasks}>Refresh</Button>
       <Row>
         <Col span={8} style={{borderRight: "1px solid white"}}>
         <List
